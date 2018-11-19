@@ -8,45 +8,37 @@ import org.objectweb.asm.tree.*;
 
 import java.util.Iterator;
 
-public class DualHotbarTransformer implements IClassTransformer
-{
+public class DualHotbarTransformer implements IClassTransformer {
 
-	@Override
-	public byte[] transform(String className, String newClassName, byte[] data) 
-	{		
-	    boolean isObfuscated = !className.equals(newClassName);		
-		
-		if (newClassName.equals("net.minecraft.entity.player.InventoryPlayer")) 
-		{
-			System.out.println("********* INSIDE InventoryPlayer TRANSFORMER ABOUT TO PATCH: " + className);
+    @Override
+    public byte[] transform(String className, String newClassName, byte[] data) {
+        boolean isObfuscated = !className.equals(newClassName);
 
-			if(!isObfuscated)
-			{
-				data = patchBipush(className, "isHotbar", "(I)Z", data);
-				data = patchBipush(className, "getHotbarSize", "()I", data);
-				data = patchBipush(className, "changeCurrentItem", "(I)V", data);
-				return patchBipush(className, "getBestHotbarSlot", "()I", data);
-			}
-			else
-			{
-				data = patchBipush(className, "func_184435_e", "(I)Z", data);	
-				data = patchBipush(className, "func_70451_h", "()I", data);
-				data = patchBipush(className, "func_70453_c", "(I)V", data);
-				return patchBipush(className, "func_184433_k", "()I", data);
-			}
-		}
-		
-		if(className.equals("net.minecraftforge.common.ForgeHooks"))
-		{
-			System.out.println("********* INSIDE ForgeHooks TRANSFORMER ABOUT TO PATCH: " + className);
-			return patchBipush2(className, "onPickBlock", null, data, false);
-		}
-		
-		if(className.equals("net.minecraftforge.client.GuiIngameForge"))
-		{
-			System.out.println("********* INSIDE GuiIngameForge TRANSFORMER ABOUT TO PATCH: " + className);
-			return patchShift(className, "renderToolHighlight", null, data);
-		}
+        if (newClassName.equals("net.minecraft.entity.player.InventoryPlayer")) {
+            System.out.println("********* INSIDE InventoryPlayer TRANSFORMER ABOUT TO PATCH: " + className);
+
+            if (!isObfuscated) {
+                data = patchBipush(className, "isHotbar", "(I)Z", data);
+                data = patchBipush(className, "getHotbarSize", "()I", data);
+                data = patchBipush(className, "changeCurrentItem", "(I)V", data);
+                return patchBipush(className, "getBestHotbarSlot", "()I", data);
+            } else {
+                data = patchBipush(className, "func_184435_e", "(I)Z", data);
+                data = patchBipush(className, "func_70451_h", "()I", data);
+                data = patchBipush(className, "func_70453_c", "(I)V", data);
+                return patchBipush(className, "func_184433_k", "()I", data);
+            }
+        }
+
+        if (className.equals("net.minecraftforge.common.ForgeHooks")) {
+            System.out.println("********* INSIDE ForgeHooks TRANSFORMER ABOUT TO PATCH: " + className);
+            return patchBipush2(className, "onPickBlock", null, data, false);
+        }
+
+        if (className.equals("net.minecraftforge.client.GuiIngameForge")) {
+            System.out.println("********* INSIDE GuiIngameForge TRANSFORMER ABOUT TO PATCH: " + className);
+            return patchShift(className, "renderToolHighlight", null, data);
+        }
 		
 		/*if(newClassName.equals("invtweaks.InvTweaks"))
 		{
@@ -54,139 +46,121 @@ public class DualHotbarTransformer implements IClassTransformer
 
 			return patchBipush2(className, "handleAutoRefill", null, data);
 		}*/
-		
-		return data;
-	}
 
-	private byte[] patchBipush(String className, String methodName, String methodDesc, byte[] data) 
-	{
-		ClassNode classNode = new ClassNode();
-		ClassReader classReader = new ClassReader(data);
-		classReader.accept(classNode, 0);
+        return data;
+    }
 
-		for(MethodNode methodNode : classNode.methods)
-		{
-			if(methodNode.name.equals(methodName) && (methodDesc == null || methodNode.desc.equals(methodDesc)))
-			{
-				System.out.println("In " + methodName);
+    private byte[] patchBipush(String className, String methodName, String methodDesc, byte[] data) {
+        ClassNode classNode = new ClassNode();
+        ClassReader classReader = new ClassReader(data);
+        classReader.accept(classNode, 0);
 
-				Iterator<AbstractInsnNode> insnIter = methodNode.instructions.iterator();
-				AbstractInsnNode insnNode = insnIter.next();
-				
-				while(insnIter.hasNext())
-				{
-					if(insnNode.getOpcode() == Opcodes.BIPUSH)
-					{
-						System.out.println("found instruction to replace");
+        for (MethodNode methodNode : classNode.methods) {
+            if (methodNode.name.equals(methodName) && (methodDesc == null || methodNode.desc.equals(methodDesc))) {
+                System.out.println("In " + methodName);
 
-						AbstractInsnNode newInstruction = new FieldInsnNode(Opcodes.GETSTATIC, "com/rebelkeithy/dualhotbar/DualHotbarMod", "hotbarSize", "I");
-						
-						methodNode.instructions.insert(insnNode, newInstruction);
-						methodNode.instructions.remove(insnNode);
-					}
-					insnNode = insnIter.next();
-				}
-			}
-		}
+                Iterator<AbstractInsnNode> insnIter = methodNode.instructions.iterator();
+                AbstractInsnNode insnNode = insnIter.next();
 
-		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		classNode.accept(writer);
-		return writer.toByteArray();
-	}
+                while (insnIter.hasNext()) {
+                    if (insnNode.getOpcode() == Opcodes.BIPUSH) {
+                        System.out.println("found instruction to replace");
 
-	private byte[] patchBipush2(String className, String methodName, String methodDesc, byte[] data, boolean isObfuscated) 
-	{
-		ClassNode classNode = new ClassNode();
-		ClassReader classReader = new ClassReader(data);
-		classReader.accept(classNode, 0);
+                        AbstractInsnNode newInstruction = new FieldInsnNode(Opcodes.GETSTATIC, "com/rebelkeithy/dualhotbar/DualHotbarMod", "hotbarSize", "I");
 
-		for(MethodNode methodNode : classNode.methods)
-		{
-			if(methodNode.name.equals(methodName) && (methodDesc == null || methodNode.desc.equals(methodDesc)))
-			{
-				System.out.println("In " + methodName);
+                        methodNode.instructions.insert(insnNode, newInstruction);
+                        methodNode.instructions.remove(insnNode);
+                    }
+                    insnNode = insnIter.next();
+                }
+            }
+        }
 
-				Iterator<AbstractInsnNode> insnIter = methodNode.instructions.iterator();
-				
-				System.out.println("Number of instructions " + methodNode.instructions.size());
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        classNode.accept(writer);
+        return writer.toByteArray();
+    }
 
-				while(insnIter.hasNext())
-				{
-					AbstractInsnNode insnNode = insnIter.next();
+    private byte[] patchBipush2(String className, String methodName, String methodDesc, byte[] data, boolean isObfuscated) {
+        ClassNode classNode = new ClassNode();
+        ClassReader classReader = new ClassReader(data);
+        classReader.accept(classNode, 0);
 
-					if(insnNode instanceof IntInsnNode)
-					{
-						System.out.println(((IntInsnNode)insnNode).operand);
-					}
-					
-					if(insnNode.getOpcode() == Opcodes.BIPUSH)
-					{
-						System.out.println("found instruction to replace");
-						
-						InsnList insnList = new InsnList();
+        for (MethodNode methodNode : classNode.methods) {
+            if (methodNode.name.equals(methodName) && (methodDesc == null || methodNode.desc.equals(methodDesc))) {
+                System.out.println("In " + methodName);
 
-						insnList.add(new VarInsnNode(Opcodes.ALOAD, 1));
-						if(isObfuscated)
-						{
-							insnList.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/entity/player/EntityPlayer", "field_71071_by", "Lnet/minecraft/entity/player/InventoryPlayer;"));
-							insnList.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/entity/player/InventoryPlayer", "field_70461_c", "I"));
-						}
-						else
-						{
-							insnList.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/entity/player/EntityPlayer", "inventory", "Lnet/minecraft/entity/player/InventoryPlayer;"));
-							insnList.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/entity/player/InventoryPlayer", "currentItem", "I"));
-						}
-						insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/rebelkeithy/dualhotbar/DualHotbarMod", "inventorySlotOffset", "(I)I", false));
-						
-						methodNode.instructions.insert(insnNode, insnList);
-						methodNode.instructions.remove(insnNode);
-						break;
-					}
-				}
-			}
-		}
-		
+                Iterator<AbstractInsnNode> insnIter = methodNode.instructions.iterator();
 
-		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		classNode.accept(writer);
-		return writer.toByteArray();
-	}
+                System.out.println("Number of instructions " + methodNode.instructions.size());
 
-	private byte[] patchShift(String className, String methodName, String methodDesc, byte[] data) 
-	{
-		ClassNode classNode = new ClassNode();
-		ClassReader classReader = new ClassReader(data);
-		classReader.accept(classNode, 0);
+                while (insnIter.hasNext()) {
+                    AbstractInsnNode insnNode = insnIter.next();
 
-		for(MethodNode methodNode : classNode.methods)
-		{
-			if(methodNode.name.equals(methodName) && (methodNode.desc.equals(methodDesc) || methodDesc == null))
-			{
-				System.out.println("In " + methodName);
+                    if (insnNode instanceof IntInsnNode) {
+                        System.out.println(((IntInsnNode) insnNode).operand);
+                    }
 
-				Iterator<AbstractInsnNode> insnIter = methodNode.instructions.iterator();
-				
+                    if (insnNode.getOpcode() == Opcodes.BIPUSH) {
+                        System.out.println("found instruction to replace");
 
-				AbstractInsnNode insnNode = insnIter.next();
+                        InsnList insnList = new InsnList();
 
-				AbstractInsnNode newInstruction = new MethodInsnNode(Opcodes.INVOKESTATIC, "com/rebelkeithy/dualhotbar/RenderHandler", "shiftUp", "()V", false);
-				methodNode.instructions.insertBefore(insnNode, newInstruction);
-				
-				while(insnNode.getOpcode() != Opcodes.RETURN)
-				{
-					insnNode = insnIter.next();
-				}
+                        insnList.add(new VarInsnNode(Opcodes.ALOAD, 1));
+                        if (isObfuscated) {
+                            insnList.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/entity/player/EntityPlayer", "field_71071_by", "Lnet/minecraft/entity/player/InventoryPlayer;"));
+                            insnList.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/entity/player/InventoryPlayer", "field_70461_c", "I"));
+                        } else {
+                            insnList.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/entity/player/EntityPlayer", "inventory", "Lnet/minecraft/entity/player/InventoryPlayer;"));
+                            insnList.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/entity/player/InventoryPlayer", "currentItem", "I"));
+                        }
+                        insnList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "com/rebelkeithy/dualhotbar/DualHotbarMod", "inventorySlotOffset", "(I)I", false));
 
-				newInstruction = new MethodInsnNode(Opcodes.INVOKESTATIC, "com/rebelkeithy/dualhotbar/RenderHandler", "shiftDown", "()V", false);
-				methodNode.instructions.insertBefore(insnNode, newInstruction);
-			}
-		}
-		
+                        methodNode.instructions.insert(insnNode, insnList);
+                        methodNode.instructions.remove(insnNode);
+                        break;
+                    }
+                }
+            }
+        }
 
-		ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
-		classNode.accept(writer);
-		return writer.toByteArray();
-	}
+
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        classNode.accept(writer);
+        return writer.toByteArray();
+    }
+
+    private byte[] patchShift(String className, String methodName, String methodDesc, byte[] data) {
+        ClassNode classNode = new ClassNode();
+        ClassReader classReader = new ClassReader(data);
+        classReader.accept(classNode, 0);
+
+        for (MethodNode methodNode : classNode.methods) {
+            if (methodNode.name.equals(methodName) && (methodNode.desc.equals(methodDesc) || methodDesc == null)) {
+                System.out.println("In " + methodName);
+
+                Iterator<AbstractInsnNode> insnIter = methodNode.instructions.iterator();
+
+
+                AbstractInsnNode insnNode = insnIter.next();
+
+                AbstractInsnNode newInstruction = new MethodInsnNode(Opcodes.INVOKESTATIC, "com/rebelkeithy/dualhotbar/RenderHandler", "shiftUp", "()V", false);
+                methodNode.instructions.insertBefore(insnNode, newInstruction);
+
+                while (insnNode.getOpcode() != Opcodes.RETURN) {
+                    insnNode = insnIter.next();
+                }
+
+                newInstruction = new MethodInsnNode(Opcodes.INVOKESTATIC, "com/rebelkeithy/dualhotbar/RenderHandler", "shiftDown", "()V", false);
+                methodNode.instructions.insertBefore(insnNode, newInstruction);
+            }
+        }
+
+
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        classNode.accept(writer);
+        return writer.toByteArray();
+    }
 
 	/*private boolean containsMethod(String methodName, String methodDesc, byte[] data) 
 	{

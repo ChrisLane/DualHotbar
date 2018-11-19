@@ -1,8 +1,6 @@
 package com.rebelkeithy.dualhotbar;
 
-public class ProxyCommon 
-{
-	public void init()
-	{
-	}
+public class ProxyCommon {
+    public void init() {
+    }
 }
