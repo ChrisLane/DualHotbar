@@ -1,10 +1,5 @@
 package com.rebelkeithy.dualhotbar;
 
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-
-import com.rebelkeithy.dualhotbar.compatability.Compatability;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
@@ -19,6 +14,8 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 public class RenderHandler 
 {
@@ -46,7 +43,7 @@ public class RenderHandler
 	        int width = res.getScaledWidth();
 	        int height = res.getScaledHeight();
 	        
-	        mc.mcProfiler.startSection("actionBar");
+	        mc.profiler.startSection("actionBar");
 	        
 	        int offset = 20;
 	
@@ -68,7 +65,7 @@ public class RenderHandler
             EntityPlayer entityplayer = (EntityPlayer)mc.getRenderViewEntity();
             ItemStack itemstack = entityplayer.getHeldItemOffhand();
             EnumHandSide enumhandside = entityplayer.getPrimaryHand().opposite();
-            if (Compatability.instance().isItemStackNull(itemstack))
+            if (itemstack.isEmpty())
             {
                 if (enumhandside == EnumHandSide.LEFT)
                 {
@@ -83,7 +80,7 @@ public class RenderHandler
             GL11.glPopMatrix();
 	        
             // Draw the hotbar slots
-	        InventoryPlayer inv = Compatability.instance().thePlayer().inventory;
+	        InventoryPlayer inv = Minecraft.getMinecraft().player.inventory;
 	        if(DualHotbarConfig.twoLayerRendering)
 	        {
 	        	mc.ingameGUI.drawTexturedModalRect(width / 2 - 91, height - 22, 0, 0, 182, 22);
@@ -130,7 +127,7 @@ public class RenderHandler
 	        		GL11.glTranslatef(0, -21, 0);
 	        }
 
-            if (Compatability.instance().isItemStackNull(itemstack))
+            if (itemstack.isEmpty())
             {
                 int l1 = res.getScaledHeight() - 16 - 3;
 
@@ -175,7 +172,7 @@ public class RenderHandler
 		        		GL11.glTranslatef(0, animationOffset, 0);
 		        	}
 		        	
-	                renderHotbarItem(x, z, partialTicks, entityplayer, Compatability.instance().getInSlot(entityplayer.inventory, i));
+	                renderHotbarItem(x, z, partialTicks, entityplayer, entityplayer.inventory.getStackInSlot(i));
 	                
 		        	GL11.glPopMatrix();
 	                
@@ -206,7 +203,7 @@ public class RenderHandler
 		        		GL11.glTranslatef(0, animationOffset, 0);
 		        	}
 		        	
-	                renderHotbarItem(x, z, partialTicks, entityplayer, Compatability.instance().getInSlot(entityplayer.inventory, i));
+	                renderHotbarItem(x, z, partialTicks, entityplayer, entityplayer.inventory.getStackInSlot(i));
 
 		        	GL11.glPopMatrix();
 	        	}
@@ -214,7 +211,7 @@ public class RenderHandler
 	
 	        RenderHelper.disableStandardItemLighting();
 	        GL11.glDisable(GL12.GL_RESCALE_NORMAL);
-	        mc.mcProfiler.endSection();
+	        mc.profiler.endSection();
 	        
 	        if(RenderHandler.switchTicks > 0)
 	        	RenderHandler.switchTicks--;
@@ -305,9 +302,9 @@ public class RenderHandler
     	Minecraft mc = Minecraft.getMinecraft();
     	RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
 
-        if (!Compatability.instance().isItemStackNull(stack))
+        if (!stack.isEmpty())
         {
-            float f = Compatability.instance().animationsToGo(stack) - p_184044_3_;
+            float f = stack.getAnimationsToGo() - p_184044_3_;
             f = Math.max(f, Math.abs(RenderHandler.switchTicks/4f));
 
             if (f > 0.0F)
@@ -327,7 +324,7 @@ public class RenderHandler
                 GlStateManager.popMatrix();
             }
 
-            itemRenderer.renderItemOverlays(mc.fontRendererObj, stack, p_184044_1_, p_184044_2_);
+            itemRenderer.renderItemOverlays(mc.fontRenderer, stack, p_184044_1_, p_184044_2_);
         }
     }
 }

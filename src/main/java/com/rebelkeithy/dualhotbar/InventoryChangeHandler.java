@@ -1,10 +1,5 @@
 package com.rebelkeithy.dualhotbar;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-
-import com.rebelkeithy.dualhotbar.compatability.Compatability;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
@@ -12,6 +7,8 @@ import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.inventory.ClickType;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 public class InventoryChangeHandler 
 {
@@ -32,8 +29,9 @@ public class InventoryChangeHandler
 
     @SubscribeEvent
     public void postTickEvent(TickEvent.ClientTickEvent event)
-    {    	 
-		if(Compatability.instance().thePlayer() == null)
+    {
+		EntityPlayerSP player = Minecraft.getMinecraft().player;
+    	if(Minecraft.getMinecraft().player == null)
 			return;
 		
     	if(event.phase == TickEvent.Phase.START)
@@ -43,7 +41,7 @@ public class InventoryChangeHandler
 
             	if(Keyboard.isKeyDown(Minecraft.getMinecraft().gameSettings.keyBindsHotbar[j].getKeyCode()))
     			{
-            		selectedItem = Compatability.instance().thePlayer().inventory.currentItem;
+            		selectedItem = player.inventory.currentItem;
     			}
             }
         	mousePrev = Mouse.getDWheel();
@@ -56,7 +54,6 @@ public class InventoryChangeHandler
 	    			swapKeyDown = true;
 	    			Minecraft mc = Minecraft.getMinecraft();
     				PlayerControllerMP controller =mc.playerController;
-    				EntityPlayerSP player = Compatability.instance().thePlayer();
 
     				int window = player.inventoryContainer.windowId;
     				
@@ -138,7 +135,7 @@ public class InventoryChangeHandler
     		// If using ctrl-scroll to swap hotbars, put the players selected slot back to what it was before the scroll
     		if(slot != -1)
     		{
-    			Compatability.instance().thePlayer().inventory.currentItem = slot;
+    			player.inventory.currentItem = slot;
     			slot = -1;
     		}
     		
@@ -157,7 +154,7 @@ public class InventoryChangeHandler
             		// If using the modifier + inv key combo, we can set the inventory slot without any more checking
             		if(Keyboard.isKeyDown(selectKey.getKeyCode()))
             		{
-            			Compatability.instance().thePlayer().inventory.currentItem = j + 9;
+            			player.inventory.currentItem = j + 9;
             			continue;
             		}
             		
@@ -171,7 +168,7 @@ public class InventoryChangeHandler
             		{
             			if(selectedItem == j + i*9)
             			{
-            				Compatability.instance().thePlayer().inventory.currentItem = (j + 9*(i+1)) % (DualHotbarConfig.numHotbars*9);
+            				player.inventory.currentItem = (j + 9*(i+1)) % (DualHotbarConfig.numHotbars*9);
             			}
             		}
             		

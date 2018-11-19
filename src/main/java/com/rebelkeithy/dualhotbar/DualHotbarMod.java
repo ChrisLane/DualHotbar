@@ -1,7 +1,5 @@
 package com.rebelkeithy.dualhotbar;
 
-import java.util.Map;
-
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -16,7 +14,9 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientDisconnection
 import net.minecraftforge.fml.common.network.NetworkCheckHandler;
 import net.minecraftforge.fml.relauncher.Side;
 
-@Mod(modid = DualHotbarMod.MODID, version = DualHotbarMod.VERSION, guiFactory = "com.rebelkeithy.dualhotbar.DualHotbarGuiFactory", acceptedMinecraftVersions = "[1.10,1.12)")
+import java.util.Map;
+
+@Mod(modid = DualHotbarMod.MODID, version = DualHotbarMod.VERSION, guiFactory = "com.rebelkeithy.dualhotbar.DualHotbarGuiFactory", acceptedMinecraftVersions = "[1.12.2,1.13)")
 public class DualHotbarMod
 {
     public static final String MODID = "dualhotbar";

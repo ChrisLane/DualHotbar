@@ -1,22 +1,12 @@
 package com.rebelkeithy.dualhotbar;
 
-import java.util.Iterator;
-
+import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.IntInsnNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
+import org.objectweb.asm.tree.*;
 
-import com.rebelkeithy.dualhotbar.compatability.Compatability;
-
-import net.minecraft.launchwrapper.IClassTransformer;
+import java.util.Iterator;
 
 public class DualHotbarTransformer implements IClassTransformer
 {
@@ -49,7 +39,7 @@ public class DualHotbarTransformer implements IClassTransformer
 		if(className.equals("net.minecraftforge.common.ForgeHooks"))
 		{
 			System.out.println("********* INSIDE ForgeHooks TRANSFORMER ABOUT TO PATCH: " + className);
-			return patchBipush2(className, "onPickBlock", null, data, Compatability.isObfuscated);
+			return patchBipush2(className, "onPickBlock", null, data, false);
 		}
 		
 		if(className.equals("net.minecraftforge.client.GuiIngameForge"))
