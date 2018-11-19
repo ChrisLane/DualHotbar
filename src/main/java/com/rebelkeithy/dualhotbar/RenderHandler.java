@@ -21,7 +21,7 @@ public class RenderHandler {
     private static final ResourceLocation WIDGITS = new ResourceLocation("textures/gui/widgets.png");
     //public static int maxSwitchTicks = 18;
     public static int switchTicks = 0;
-    private boolean recievedPost = true;
+    private boolean receivedPost = true;
 
     // This is used by the asm transformer
     public static void shiftUp() {
@@ -231,11 +231,11 @@ public class RenderHandler {
 
         if (event.getType() == ElementType.CHAT || event.getType() == ElementType.ARMOR || event.getType() == ElementType.EXPERIENCE || event.getType() == ElementType.FOOD || event.getType() == ElementType.HEALTH || event.getType() == ElementType.HEALTHMOUNT || event.getType() == ElementType.JUMPBAR || event.getType() == ElementType.AIR/* || event.type == ElementType.TEXT*/) {
             // In some cases the post render event is not received (when the pre event is cancelled by another mod), in the case, go ahead an pop the matrix before continuing
-            if (!recievedPost) {
+            if (!receivedPost) {
                 GL11.glPopMatrix();
             }
 
-            recievedPost = false;
+            receivedPost = false;
             GL11.glPushMatrix();
 
             if (DualHotbarConfig.twoLayerRendering)
@@ -252,13 +252,13 @@ public class RenderHandler {
         }
 
         if (event.getType() == ElementType.CHAT || event.getType() == ElementType.ARMOR || event.getType() == ElementType.EXPERIENCE || event.getType() == ElementType.FOOD || event.getType() == ElementType.HEALTH || event.getType() == ElementType.HEALTHMOUNT || event.getType() == ElementType.JUMPBAR || event.getType() == ElementType.AIR/* || event.type == ElementType.TEXT*/) {
-            recievedPost = true;
+            receivedPost = true;
             GL11.glPopMatrix();
         }
     }
 
     // Copied from GuiIngame.renderHotbarItem
-    protected void renderHotbarItem(int p_184044_1_, int p_184044_2_, float p_184044_3_, EntityPlayer player, ItemStack stack) {
+    protected void renderHotbarItem(int x, int y, float partialTicks, EntityPlayer player, ItemStack stack) {
         if (!DualHotbarConfig.enable) {
             return;
         }
@@ -267,25 +267,24 @@ public class RenderHandler {
         RenderItem itemRenderer = Minecraft.getMinecraft().getRenderItem();
 
         if (!stack.isEmpty()) {
-            float f = stack.getAnimationsToGo() - p_184044_3_;
+            float f = (float) stack.getAnimationsToGo() - partialTicks;
             f = Math.max(f, Math.abs(RenderHandler.switchTicks / 4f));
 
             if (f > 0.0F) {
                 GlStateManager.pushMatrix();
                 float f1 = 1.0F + f / 5.0F;
-                GlStateManager.translate((float) (p_184044_1_ + 8), (float) (p_184044_2_ + 12), 0.0F);
+                GlStateManager.translate((float) (x + 8), (float) (y + 12), 0.0F);
                 GlStateManager.scale(1.0F / f1, (f1 + 1.0F) / 2.0F, 1.0F);
-                GlStateManager.translate((float) (-(p_184044_1_ + 8)), (float) (-(p_184044_2_ + 12)), 0.0F);
+                GlStateManager.translate((float) (-(x + 8)), (float) (-(y + 12)), 0.0F);
             }
 
-
-            itemRenderer.renderItemAndEffectIntoGUI(player, stack, p_184044_1_, p_184044_2_);
+            itemRenderer.renderItemAndEffectIntoGUI(player, stack, x, y);
 
             if (f > 0.0F) {
                 GlStateManager.popMatrix();
             }
 
-            itemRenderer.renderItemOverlays(mc.fontRenderer, stack, p_184044_1_, p_184044_2_);
+            itemRenderer.renderItemOverlays(mc.fontRenderer, stack, x, y);
         }
     }
 }
