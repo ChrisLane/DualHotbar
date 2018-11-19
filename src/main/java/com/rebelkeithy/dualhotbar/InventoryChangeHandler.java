@@ -41,7 +41,7 @@ public class InventoryChangeHandler {
 
             //System.out.println("swap: " + swapkey.getKeyDescription());
             if (Keyboard.isKeyDown(swapkey.getKeyCode()) && Math.abs(mousePrev - Mouse.getDWheel()) > 0) {
-                if (swapKeyDown == false) {
+                if (!swapKeyDown) {
                     swapKeyDown = true;
                     Minecraft mc = Minecraft.getMinecraft();
                     PlayerControllerMP controller = mc.playerController;
@@ -63,12 +63,6 @@ public class InventoryChangeHandler {
                                     controller.windowClick(window, i + 9, 0, ClickType.PICKUP, player);
                                 controller.windowClick(window, i + 36, 0, ClickType.PICKUP, player);
                             }
-                        } else if (DualHotbarConfig.numHotbars == 4) {
-                            for (int i = 9; i < 27; i++) {
-                                controller.windowClick(window, i, 0, ClickType.PICKUP, player);
-                                controller.windowClick(window, i + 18, 0, ClickType.PICKUP, player);
-                                controller.windowClick(window, i, 0, ClickType.PICKUP, player);
-                            }
                         }
                     } else {
                         RenderHandler.switchTicks = 12;
@@ -83,21 +77,22 @@ public class InventoryChangeHandler {
                                     controller.windowClick(window, i + 27, 0, ClickType.PICKUP, player);
                                 controller.windowClick(window, i + 36, 0, ClickType.PICKUP, player);
                             }
-                        } else if (DualHotbarConfig.numHotbars == 4) {
-                            for (int i = 9; i < 27; i++) {
-                                controller.windowClick(window, i, 0, ClickType.PICKUP, player);
-                                controller.windowClick(window, i + 18, 0, ClickType.PICKUP, player);
-                                controller.windowClick(window, i, 0, ClickType.PICKUP, player);
-                            }
                         }
                     }
-    				/*
-    				for(int i = 18; i < 27; i++)
-    				{
-    					controller.windowClick(window, i, 0, 0, player);
-    					controller.windowClick(window, i+9, 0, 0, player);
-    					controller.windowClick(window, i, 0, 0, player);
-    				}*/
+
+                    if (DualHotbarConfig.numHotbars == 4) {
+                        for (int i = 9; i < 27; i++) {
+                            controller.windowClick(window, i, 0, ClickType.PICKUP, player);
+                            controller.windowClick(window, i + 18, 0, ClickType.PICKUP, player);
+                            controller.windowClick(window, i, 0, ClickType.PICKUP, player);
+                        }
+                    }
+
+                    /*for (int i = 18; i < 27; i++) {
+                        controller.windowClick(window, i, 0, 0, player);
+                        controller.windowClick(window, i + 9, 0, 0, player);
+                        controller.windowClick(window, i, 0, 0, player);
+                    }*/
 
                     slot = player.inventory.currentItem;
                 }
@@ -144,17 +139,17 @@ public class InventoryChangeHandler {
                     if (lastKey == j && DualHotbarConfig.doubleTap && time - keyTimes[j] < 900) {
                         clickCount++;
 
-                        //if(clickCount > 1)
-                        //	clickCount = 0;
+                        //if (clickCount > 1)
+                        //    clickCount = 0;
                     } else {
                         clickCount = 0;
                     }
 
                     // If clickCount = 1 then there was a double click, since 0 was the first click
                     if (clickCount > 0) {
-                        //Minecraft.getMinecraft().thePlayer.inventory.currentItem = j + 9;
+                        //player.inventory.currentItem = j + 9;
 
-                        //Minecraft.getMinecraft().thePlayer.inventory.currentItem = (j + 9 * (clickCount)) % (DualHotbarConfig.numHotbars*9);
+                        //player.inventory.currentItem = (j + 9 * (clickCount)) % (DualHotbarConfig.numHotbars * 9);
 
                     }
 

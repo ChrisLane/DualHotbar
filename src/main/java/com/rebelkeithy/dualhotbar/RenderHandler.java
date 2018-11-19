@@ -33,7 +33,7 @@ public class RenderHandler {
         if (DualHotbarConfig.twoLayerRendering)
             GL11.glTranslatef(0, -20 * (DualHotbarConfig.numHotbars - 1), 0);
         else
-            GL11.glTranslatef(0, -20 * (DualHotbarConfig.numHotbars / 2 - 1), 0);
+            GL11.glTranslatef(0, -20 * (DualHotbarConfig.numHotbars / 2f - 1), 0);
     }
 
     // This is used by the asm transformer
@@ -78,6 +78,9 @@ public class RenderHandler {
 
             // Draw the offhand slot
             EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
+            if (entityplayer == null) {
+                return;
+            }
             ItemStack itemstack = entityplayer.getHeldItemOffhand();
             EnumHandSide enumhandside = entityplayer.getPrimaryHand().opposite();
             if (itemstack.isEmpty()) {
@@ -191,10 +194,10 @@ public class RenderHandler {
                             animationOffset -= 2;
 
                         if (RenderHandler.switchTicks < 0 && (i / 9 == 2 || i / 9 == 3) && RenderHandler.switchTicks < -6)
-                            animationOffset += 20 * DualHotbarConfig.numHotbars / 2;
+                            animationOffset += 20 * DualHotbarConfig.numHotbars / 2f;
 
                         if (RenderHandler.switchTicks > 0 && (i / 9 == 0 || i / 9 == 1) && RenderHandler.switchTicks > 6)
-                            animationOffset -= 20 * DualHotbarConfig.numHotbars / 2;
+                            animationOffset -= 20 * DualHotbarConfig.numHotbars / 2f;
 
                         GL11.glTranslatef(0, animationOffset, 0);
                     }
@@ -228,7 +231,7 @@ public class RenderHandler {
 
         if (event.getType() == ElementType.CHAT || event.getType() == ElementType.ARMOR || event.getType() == ElementType.EXPERIENCE || event.getType() == ElementType.FOOD || event.getType() == ElementType.HEALTH || event.getType() == ElementType.HEALTHMOUNT || event.getType() == ElementType.JUMPBAR || event.getType() == ElementType.AIR/* || event.type == ElementType.TEXT*/) {
             // In some cases the post render event is not received (when the pre event is cancelled by another mod), in the case, go ahead an pop the matrix before continuing
-            if (recievedPost == false) {
+            if (!recievedPost) {
                 GL11.glPopMatrix();
             }
 
@@ -238,7 +241,7 @@ public class RenderHandler {
             if (DualHotbarConfig.twoLayerRendering)
                 GL11.glTranslatef(0, -20 * (DualHotbarConfig.numHotbars - 1), 0);
             else
-                GL11.glTranslatef(0, -20 * (DualHotbarConfig.numHotbars / 2 - 1), 0);
+                GL11.glTranslatef(0, -20 * (DualHotbarConfig.numHotbars / 2f - 1), 0);
         }
     }
 
