@@ -63,12 +63,9 @@ public class DualHotbarTransformer implements IClassTransformer
 		ClassNode classNode = new ClassNode();
 		ClassReader classReader = new ClassReader(data);
 		classReader.accept(classNode, 0);
-		
-		Iterator<MethodNode> iter = classNode.methods.iterator();
-		while(iter.hasNext())
+
+		for(MethodNode methodNode : classNode.methods)
 		{
-			MethodNode methodNode = iter.next();
-			
 			if(methodNode.name.equals(methodName) && (methodDesc == null || methodNode.desc.equals(methodDesc)))
 			{
 				System.out.println("In " + methodName);
@@ -102,12 +99,9 @@ public class DualHotbarTransformer implements IClassTransformer
 		ClassNode classNode = new ClassNode();
 		ClassReader classReader = new ClassReader(data);
 		classReader.accept(classNode, 0);
-		
-		Iterator<MethodNode> iter = classNode.methods.iterator();
-		while(iter.hasNext())
+
+		for(MethodNode methodNode : classNode.methods)
 		{
-			MethodNode methodNode = iter.next();
-			
 			if(methodNode.name.equals(methodName) && (methodDesc == null || methodNode.desc.equals(methodDesc)))
 			{
 				System.out.println("In " + methodName);
@@ -115,7 +109,7 @@ public class DualHotbarTransformer implements IClassTransformer
 				Iterator<AbstractInsnNode> insnIter = methodNode.instructions.iterator();
 				
 				System.out.println("Number of instructions " + methodNode.instructions.size());
-				
+
 				while(insnIter.hasNext())
 				{
 					AbstractInsnNode insnNode = insnIter.next();
@@ -163,12 +157,9 @@ public class DualHotbarTransformer implements IClassTransformer
 		ClassNode classNode = new ClassNode();
 		ClassReader classReader = new ClassReader(data);
 		classReader.accept(classNode, 0);
-		
-		Iterator<MethodNode> iter = classNode.methods.iterator();
-		while(iter.hasNext())
+
+		for(MethodNode methodNode : classNode.methods)
 		{
-			MethodNode methodNode = iter.next();
-			
 			if(methodNode.name.equals(methodName) && (methodNode.desc.equals(methodDesc) || methodDesc == null))
 			{
 				System.out.println("In " + methodName);

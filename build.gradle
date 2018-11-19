@@ -15,9 +15,9 @@ version = "1.1x-1.7.2"
 group = "com.rebelkeithy.dualhotbar" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "dualhotbar"
 
-sourceCompatibility = targetCompatibility = "1.6" // Need this here so eclipse task generates correctly.
+sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
 compileJava {
-    sourceCompatibility = targetCompatibility = "1.6"
+    sourceCompatibility = targetCompatibility = "1.8"
 }
 
 minecraft {
