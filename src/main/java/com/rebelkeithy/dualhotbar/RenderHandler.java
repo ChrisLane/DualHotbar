@@ -77,12 +77,9 @@ public class RenderHandler {
             }
 
             // Draw the offhand slot
-            EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
-            if (entityplayer == null) {
-                return;
-            }
-            ItemStack itemstack = entityplayer.getHeldItemOffhand();
-            EnumHandSide enumhandside = entityplayer.getPrimaryHand().opposite();
+            EntityPlayer player = mc.player;
+            ItemStack itemstack = player.getHeldItemOffhand();
+            EnumHandSide enumhandside = player.getPrimaryHand().opposite();
             if (itemstack.isEmpty()) {
                 if (enumhandside == EnumHandSide.LEFT) {
                     mc.ingameGUI.drawTexturedModalRect(width / 2 - 91 - 29, res.getScaledHeight() - 23, 24, 22, 29, 24);
@@ -140,9 +137,9 @@ public class RenderHandler {
                 int l1 = res.getScaledHeight() - 16 - 3;
 
                 if (enumhandside == EnumHandSide.LEFT) {
-                    this.renderHotbarItem(width / 2 - 91 - 26, l1, partialTicks, entityplayer, itemstack);
+                    this.renderHotbarItem(width / 2 - 91 - 26, l1, partialTicks, player, itemstack);
                 } else {
-                    this.renderHotbarItem(width / 2 + 91 + 10, l1, partialTicks, entityplayer, itemstack);
+                    this.renderHotbarItem(width / 2 + 91 + 10, l1, partialTicks, player, itemstack);
                 }
             }
 
@@ -174,7 +171,7 @@ public class RenderHandler {
                         GL11.glTranslatef(0, animationOffset, 0);
                     }
 
-                    renderHotbarItem(x, z, partialTicks, entityplayer, entityplayer.inventory.getStackInSlot(i));
+                    renderHotbarItem(x, z, partialTicks, player, player.inventory.getStackInSlot(i));
 
                     GL11.glPopMatrix();
 
@@ -202,7 +199,7 @@ public class RenderHandler {
                         GL11.glTranslatef(0, animationOffset, 0);
                     }
 
-                    renderHotbarItem(x, z, partialTicks, entityplayer, entityplayer.inventory.getStackInSlot(i));
+                    renderHotbarItem(x, z, partialTicks, player, player.inventory.getStackInSlot(i));
 
                     GL11.glPopMatrix();
                 }
